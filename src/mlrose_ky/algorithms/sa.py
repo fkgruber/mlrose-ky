@@ -6,6 +6,7 @@
 from typing import Callable, Any
 
 import numpy as np
+import pandas as pd
 
 from mlrose_ky.algorithms.decay import GeomDecay
 from mlrose_ky.decorators import short_name
@@ -129,7 +130,7 @@ def simulated_annealing(
                 attempts += 1
 
         if curve:
-            fitness_curve.append((problem.get_adjusted_fitness(), problem.fitness_evaluations))
+            fitness_curve.append((iters,temp, problem.get_adjusted_fitness(), problem.fitness_evaluations))
 
         # invoke callback
         if state_fitness_callback is not None:
@@ -151,5 +152,7 @@ def simulated_annealing(
 
     best_fitness = problem.get_maximize() * problem.get_fitness()
     best_state = problem.get_state()
-
-    return best_state, best_fitness, np.asarray(fitness_curve) if curve else None
+    if curve:
+        fitness_curve=pd.DataFrame(fitness_curve,
+                           columns=["Iterations","Temp","Adjusted_Fitness","Fitness_Evaluation"])
+    return best_state, best_fitness, fitness_curve if curve else None
