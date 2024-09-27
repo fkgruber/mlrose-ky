@@ -21,6 +21,7 @@ def simulated_annealing(
     init_state: np.ndarray = None,
     curve: bool = False,
     random_state: int = None,
+    perturbation_scheme: str = "random",
     state_fitness_callback: Callable = None,
     callback_user_info: Any = None,
 ) -> tuple[np.ndarray, float, np.ndarray | None]:

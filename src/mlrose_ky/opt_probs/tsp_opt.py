@@ -4,7 +4,7 @@
 # License: BSD 3-clause
 
 from typing import Any
-
+import python_tsp.heuristics.perturbation_schemes as ps
 import numpy as np
 
 from mlrose_ky.algorithms.crossovers import TSPCrossOver
@@ -158,7 +158,7 @@ class TSPOpt(DiscreteOpt):
 
         return state
 
-    def random_neighbor(self) -> np.ndarray:
+    def random_neighbor(self,perturbation_scheme="random") -> np.ndarray:
         """Return random neighbor of current state vector.
 
         Returns
@@ -166,14 +166,34 @@ class TSPOpt(DiscreteOpt):
         neighbor : np.ndarray
             State vector of random neighbor.
         """
-        neighbor = np.copy(self.state)
-        node1, node2 = np.random.choice(np.arange(self.length), size=2, replace=False)
+        if perturbation_scheme == "random":
 
-        # Swap the positions of node1 and node2
-        neighbor[node1] = self.state[node2]
-        neighbor[node2] = self.state[node1]
+            neighbor = np.copy(self.state)
+            node1, node2 = np.random.choice(np.arange(self.length), size=2, replace=False)
 
+            # Swap the positions of node1 and node2
+            neighbor[node1] = self.state[node2]
+            neighbor[node2] = self.state[node1]
+
+
+        elif perturbation_scheme == "ps1":
+            allper=ps.ps4_gen(self.state)
+            neighbor=next(allper)
+        elif perturbation_scheme == "ps2":
+            allper=ps.ps2_gen(self.state)
+            neighbor=next(allper)
+        elif perturbation_scheme == "ps3":
+            allper=ps.ps3_gen(self.state)
+            neighbor=next(allper)
+        elif perturbation_scheme == "ps5":
+            allper=ps.ps5_gen(self.state)
+            neighbor=next(allper)
+        else:
+            allper=ps.two_opt(self.state)
+            neighbor=next(allper)
         return neighbor
+
+
 
     def sample_pop(self, sample_size: int) -> np.ndarray:
         """Generate a new sample from the probability density.
